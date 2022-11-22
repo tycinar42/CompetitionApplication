@@ -25,31 +25,42 @@ export const fetchRegister = createAsyncThunk(
      * @param {"username": "", "password": "", "email": "", "admincode": ""} payload 
      */
     async(payload) => {
-        const response = await fetch(AuthService.register, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload),
-        })
-        console.log(response);
-        return response.json();
+        try{
+            console.log(payload);
+            const response = await fetch(AuthService.register,{
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'              
+                    },        
+                    body: JSON.stringify(payload),
+                }).then(data => data.json())
+                .then(data => data);
+                //.catch(err => console.log('Hatalı geldi....: ',err));    
+                console.log(response);
+                return response;
+        }catch(e){
+            console.log('Hata: ',e);
+        }
     }
 );
 
 export const fetchLogin = createAsyncThunk(
     'auth/fetchLogin',
-    async(payload) => {
-        const response = await fetch(AuthService.login, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload),
-        }).then(data => data.json())
-        .then(data => data)
-        .catch(err => console.log(err));
-        return response;
+    async (payload)=>{    
+        try{
+            const response = await fetch(AuthService.login,{
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'              
+                    },        
+                    body: JSON.stringify(payload),
+                }).then(data => data.json())
+                .then(data => data);
+                //.catch(err => console.log('Hatalı geldi....: ',err));    
+                return response;
+        }catch(e){
+            console.log('Hata: ',e);
+        }      
     }
 );
 
@@ -81,8 +92,13 @@ const authSlice = createSlice({
         });    
         build.addCase(fetchLogin.fulfilled,(state,action)=>{
             console.log(action.payload);           
-            state.isLoadingLogin=false;
+            if(action.payload.code === 1402){
+                alert(action.payload.message);
+            }    else{
+                 state.isLoadingLogin=false;
             state.token = action.payload.token;
+            state.isAuthenticated = true;
+            }  
         });
         build.addCase(fetchLogin.rejected,(state)=>{
             state.isLoadingLogin=false;
@@ -90,4 +106,4 @@ const authSlice = createSlice({
 
     }
 });
-export default authSlice;
+export default authSlice.reducer;

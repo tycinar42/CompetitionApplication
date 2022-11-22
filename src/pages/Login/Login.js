@@ -1,12 +1,12 @@
 import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {fetchLogin, fetchRegister} from '../../store/features/authSlice';
+import {fetchLogin} from '../../store/features/authSlice';
 
 export default function Login() {
     const dispatch = useDispatch();
     const[username, setUsername] = React.useState("");
     const[password, setPassword] = React.useState("");
-    const token = useSelector(state => state.auth)
+    const token = useSelector(state => state.auth.token)
 
     const getUsername = (evt) => {
         setUsername(evt.target.value)
@@ -20,14 +20,6 @@ export default function Login() {
             'password': password,
         }))
     }
-
-    React.useEffect(() => {
-        dispatch(fetchRegister({
-            'username': '...',
-            'password': '...',
-            'email': '...',
-        }))
-    }, [dispatch]);
 
   return (
         <>
