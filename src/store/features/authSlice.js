@@ -1,7 +1,6 @@
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {createAsyncThunk,createSlice} from '@reduxjs/toolkit';
 import AuthService from '../../config/AuthService';
-
-const initialStateAuth = {
+const inititalStateAuth={
     token: '',
     auth: [],
     isAuthenticated: false,
@@ -9,43 +8,34 @@ const initialStateAuth = {
     isLoadingRegister: false,
 };
 
-export const fetchRegister = createAsyncThunk(
+export const fetchRegister= createAsyncThunk(
     'auth/fetchRegister',
     /**
-     * payload -> iligili metodumuza dışarıdan girilen bilgilerdir.
-     * Eğer sadece bir değer girerseniz payload o değer olacaktır.
-     * Ancak, eğer bir dizi ya da json object girerseniz bu kullanıma göre payload
-     * şu şekilde kullanılır -> {username: 'test', password: 'pswrd'}
-     * örn: dispatch(fetchRegister({username: 'ali'}))
-     * datayı metot içinde almak için ise -> payload.username olacaktır.
-     */
-
-    /**
+     * payload -> ilgili methosdumuza dışarıdan girilen bilgilerdir. 
+     * Eğer sadece bir değer girerseniz payload o değer olacaktır. 
+     * Ancak, eğer bir dizi yada json object girerseniz bu kullanıma göre göre payload şu
+     * şekilde kullanılır -> {username: 'test', password: 'test'} 
+     * örn: dispatch(fetchRegister({username:'ali'}))
+     * datayı method içinde almak için ise -> payload.username olacaktır.
      * 
+     */
+    /**
      * @param {"username": "", "password": "", "email": "", "admincode": ""} payload 
      */
-    async(payload) => {
-        try{
-            console.log(payload);
-            const response = await fetch(AuthService.register,{
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'              
-                    },        
-                    body: JSON.stringify(payload),
-                }).then(data => data.json())
-                .then(data => data);
-                //.catch(err => console.log('Hatalı geldi....: ',err));    
-                console.log(response);
-                return response;
-        }catch(e){
-            console.log('Hata: ',e);
-        }
+    async (payload)=>{
+        const response = await fetch(AuthService.register,{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'              
+              },
+            body: JSON.stringify(payload),
+        }).then(response => response.json())
+        .then(data=>data).catch(err=>console.log(err));
+        return response;
     }
 );
-
-export const fetchLogin = createAsyncThunk(
-    'auth/fetchLogin',
+export const fetchLogin= createAsyncThunk(
+    'auth/fetchLogin',    
     async (payload)=>{    
         try{
             const response = await fetch(AuthService.login,{
@@ -59,39 +49,39 @@ export const fetchLogin = createAsyncThunk(
                 //.catch(err => console.log('Hatalı geldi....: ',err));    
                 return response;
         }catch(e){
-            console.log('Hata: ',e);
-        }      
+       //     console.log('Hata: ',e);
+        }
+
+      
     }
 );
-
-const authSlice = createSlice({
+const authSlice= createSlice({
     name: 'auth',
-    initialState: initialStateAuth,
+    initialState: inititalStateAuth,
     /**
      * initial state içindeki değerleri set etmek için kullanılır.
      */
-
-    reducers: {},
+    reducers:{},
     /**
      * async işlemler için kullanılır.
      */
-
-    extraReducers:(build) => {
-        build.addCase(fetchRegister.pending, (state) => {
-            state.isLoadingRegister = true;
+    extraReducers:(build)=> {
+        build.addCase(fetchRegister.pending,(state)=>{
+            state.isLoadingRegister=true;
         });
-        build.addCase(fetchRegister.fulfilled, (state, action) => {
+        build.addCase(fetchRegister.fulfilled,(state,action)=>{
+            console.log(action.payload);
             state.isLoadingRegister = false;
             state.auth = action.payload;
         });
-        build.addCase(fetchRegister.rejected, (state) => {
+        build.addCase(fetchRegister.rejected,(state)=>{
             state.isLoadingRegister = false;
         });
         build.addCase(fetchLogin.pending,(state)=>{
             state.isLoadingLogin=true;
         });    
         build.addCase(fetchLogin.fulfilled,(state,action)=>{
-            console.log(action.payload);           
+            console.log(action.payload);
             if(action.payload.code === 1402){
                 alert(action.payload.message);
             }    else{
@@ -99,11 +89,12 @@ const authSlice = createSlice({
             state.token = action.payload.token;
             state.isAuthenticated = true;
             }  
+           
         });
         build.addCase(fetchLogin.rejected,(state)=>{
-            state.isLoadingLogin=false;
+                     state.isLoadingLogin=false;
         });
-
     }
 });
+
 export default authSlice.reducer;

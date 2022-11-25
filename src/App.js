@@ -1,18 +1,21 @@
-import {BrowserRouter, Route, Routes} from 'react-router-dom';
-import Home from './pages/Home';
-import {Register} from './pages/Register';
-import {Login} from './pages/Login';
-import { useSelector } from 'react-redux';
-
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Register from "./pages/Register";
+import { Login } from "./pages/Login";
+import { useSelector } from "react-redux";
 function App() {
-  const isLogin = useSelector(state => state.auth.isAuthenticated);
-  // console.log(isLogin);
+  /**
+   * Eğer kullanıcı oturum açmamışsa ne olacak?
+   * 
+   */
+  
+  const islogin = useSelector(state=> state.auth.isAuthenticated) 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/' element = {isLogin ? <Home /> : <Login />}></Route>
-        <Route path='/login' element = {<Login />}></Route>
-        <Route path='/register' element = {<Register />}></Route>
+        <Route path="/" element={islogin ? <Home /> : <Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </BrowserRouter>
   );

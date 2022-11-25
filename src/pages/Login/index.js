@@ -1,4 +1,4 @@
-import Login from './Login'
-export {
+import Login from './Login';
+export{
     Login
 };

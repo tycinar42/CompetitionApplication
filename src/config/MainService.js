@@ -1,5 +1,4 @@
 import RestApis from "./RestApis";
-
 const MainService = {
 
 };
