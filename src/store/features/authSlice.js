@@ -6,6 +6,7 @@ const inititalStateAuth={
     isAuthenticated: false,
     isLoadingLogin: false,
     isLoadingRegister: false,
+   
 };
 
 export const fetchRegister= createAsyncThunk(
@@ -55,6 +56,7 @@ export const fetchLogin= createAsyncThunk(
       
     }
 );
+
 const authSlice= createSlice({
     name: 'auth',
     initialState: inititalStateAuth,

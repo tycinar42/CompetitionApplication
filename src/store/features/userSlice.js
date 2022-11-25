@@ -2,19 +2,24 @@ import {createAsyncThunk,createSlice} from '@reduxjs/toolkit';
 import UserService from '../../config/UserService';
 const initialStateUser={
     onlineUsers: [],
+    myprofile: null,
 }
 
 export const fetchDoOnline= createAsyncThunk(
     'user/fetchDoOnline',    
-    async (payload)=>{    
+    async (payload)=>{           
         try{
             const response = await fetch(UserService.doOnline,{
                     method: 'POST',
                     headers: {
+                        Accept: 'application/json',
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer '+payload
+                        'Accept-Encoding': 'gzip;q=1.0, compress;q=0.5',
+                        'Authorization': 'Bearer '+payload.token
                     },        
-                    body: JSON.stringify(payload),
+                    body: JSON.stringify({
+                        token: payload.token
+                    }),
                 }).then(data => data.json())
                 .then(data => data);
                 //.catch(err => console.log('Hatalı geldi....: ',err));    
@@ -33,10 +38,14 @@ export const fetchDoOffline= createAsyncThunk(
             const response = await fetch(UserService.doOffline,{
                     method: 'POST',
                     headers: {
+                        Accept: 'application/json',
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer '+payload             
+                        'Accept-Encoding': 'gzip;q=1.0, compress;q=0.5',
+                        'Authorization': 'Bearer '+payload.token            
                     },        
-                    body: JSON.stringify(payload),
+                    body: JSON.stringify({
+                        token: payload.token
+                    }),
                 }).then(data => data.json())
                 .then(data => data);
                 //.catch(err => console.log('Hatalı geldi....: ',err));    
@@ -56,12 +65,40 @@ export const fetchOnLineList= createAsyncThunk(
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer '+payload            
+                        'Authorization': 'Bearer '+payload.token            
                     },        
-                    body: JSON.stringify(payload),
+                    body:  {
+                        'token': payload.token
+                    },
                 }).then(data => data.json())
                 .then(data => data);
                 //.catch(err => console.log('Hatalı geldi....: ',err));    
+                return response;
+        }catch(e){
+       //     console.log('Hata: ',e);
+        }
+
+      
+    }
+);
+export const fetchMyProfile= createAsyncThunk(
+    'user/fetchMyProfile',    
+    async (payload)=>{           
+        try{
+            const response = await fetch(UserService.getMyProfile,{
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Accept-Encoding': 'gzip;q=1.0, compress;q=0.5',
+                        'Authorization': 'Bearer '+payload.token
+                    },        
+                    body: JSON.stringify({
+                        token: payload.token
+                    }),
+                }).then(data => data.json())
+                .then(data => data);
+               
                 return response;
         }catch(e){
        //     console.log('Hata: ',e);
@@ -89,6 +126,10 @@ const userSlice= createSlice({
         });
         build.addCase(fetchOnLineList.rejected,(state)=>{
           
+        });
+        build.addCase(fetchMyProfile.fulfilled,(state,action)=>{ 
+                   
+            state.myprofile = action.payload;
         });
        
     }

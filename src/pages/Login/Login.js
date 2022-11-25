@@ -3,6 +3,9 @@ import {useDispatch} from 'react-redux';
 import {
     fetchLogin
 } from '../../store/features/authSlice';
+import {
+  fetchMyProfile
+} from '../../store/features/userSlice';
 import {useNavigate} from 'react-router-dom';
 export default function Login() {
   const navigate = useNavigate();
@@ -20,8 +23,13 @@ export default function Login() {
         dispatch(fetchLogin({
             'username': username,
             'password': password
-        })).then(()=>{         
-          navigate.call(null,"/");
+        })).then((data)=>{                
+            
+                dispatch(fetchMyProfile({
+                    'token': data.payload.token
+                }));
+                navigate.call(null,"/");
+                   
         });
     }
 
