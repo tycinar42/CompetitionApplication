@@ -1,8 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { fetchDoOnline, fetchOnLineList, fetchDoOffline } from "../../store/features/userSlice";
 import { fetchFindAllQuestions} from "../../store/features/mainSlice";
 import { useDispatch, useSelector } from "react-redux";
 import {useNavigate} from 'react-router-dom';
+import OnlineUserList from "../../components/organisms/OnlineUserList";
+import Question from '../../components/molecules/Question';
 export default function Index() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -10,6 +12,24 @@ export default function Index() {
   const myprofile = useSelector((state) => state.user.myprofile);
   const onlineUsers = useSelector((state) => state.user.onlineUsers);
   const questionsList = useSelector((state) => state.main.questionsList);
+  const [activeQuestionIndex,setActiveQuestionIndex] = useState(0);
+  const [answerList,setAnswerList] = useState([]);
+  const [isFinished,setIsFinished] = useState(false);
+  const doAnswer = (index, answerId)=>{
+    console.log('doAnswer',index, answerId);
+    setAnswerList([
+      ...answerList,
+      {
+        answerId: answerId,
+        index: index
+      }
+    ])
+    if(activeQuestionIndex < questionsList.length - 1){
+      setActiveQuestionIndex(activeQuestionIndex+1);
+    }else{
+      setIsFinished(true);
+    }
+  }
   const doOffline = ()=>{
     dispatch(fetchDoOffline({token: token}));
     navigate.call(null,"/login");
@@ -20,7 +40,7 @@ export default function Index() {
         token: token,
       })
     );
-    dispatch(fetchFindAllQuestions({token: token}));
+    dispatch(fetchFindAllQuestions());
    const refreshpage =  setInterval(() => {
       dispatch(
         fetchOnLineList({
@@ -32,6 +52,7 @@ export default function Index() {
       clearInterval(refreshpage);
     }
   }, [dispatch, token]); 
+ 
   return (
     <>
       <div className="container-fluid text-center mb-2 text-bg-danger">
@@ -58,60 +79,20 @@ export default function Index() {
           
           </div>
           <div className="col-md-7">
-            </div>
+            {
+              isFinished ? (
+                <h1>Bittiiiiiiii.</h1>
+              )
+              : <Question                  
+                size={questionsList?.length}
+                doAnswer={doAnswer}
+                data={questionsList[activeQuestionIndex]} 
+                index={activeQuestionIndex}/>
+            }
+             
+          </div>
           <div className="col-md-2 " style={{marginLeft:8}}>
-          <div  className="row"
-              style={{ minHeight: 550, backgroundColor: "#FF9F9F" }}
-            >
-              <div className="col-md-12">
-                <h3 className="text-center" style={{ color: "white" }}>
-                  Online
-                </h3>
-                <div className="row">
-                  {onlineUsers?.map((data, index) => {
-                    return (
-                      <div key={index} className="col-md-12 mb-1">
-                        <div className="ui link cards">
-                          <div className="card">                           
-                            <div className="content">
-                              <div className="header">{data.username}</div>
-                            </div>
-                            <div className="extra content">
-                              <span className="right floated">Online</span>
-                              <span>
-                                <div
-                                  style={{
-                                    width: 18,
-                                    height: 18,
-                                    borderRadius: 9,
-                                    backgroundColor: "green",
-                                  }}
-                                ></div>
-                                
-                                {
-                                  /**
-                                    <div
-                                  style={{
-                                    width: 18,
-                                    height: 18,
-                                    borderRadius: 9,
-                                    backgroundColor: "lightgray",
-                                  }}
-                                ></div>
-
-                                   */
-                                }
-                               
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
+            <OnlineUserList onlineUsers={onlineUsers} />
           </div>
         </div>
       </div>

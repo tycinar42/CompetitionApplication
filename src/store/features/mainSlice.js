@@ -7,13 +7,13 @@ const initialStateMain={
 
 export const fetchFindAllQuestions= createAsyncThunk(
     'main/fetchFindAllQuestions',
-    async (payload)=>{
+    async ()=>{
         try{
-            const response = await fetch(MainService.findall,{
-                    method: 'GET',                                               
-                }).then(data => data.json())
-                .then(data => data);
-              
+           
+            const response = await fetch(MainService.findall)
+                .then(data => data.json())
+                .then(data => data);   
+                     
                 return response;
         }catch(e){
             console.log('Hata: ',e);
@@ -25,6 +25,9 @@ const mainSlice = createSlice({
     initialState: initialStateMain,
     reducers: {},
     extraReducers:(build)=> {
+        build.addCase(fetchFindAllQuestions.pending, (state, action) => {
+            
+        });
         build.addCase(fetchFindAllQuestions.fulfilled,(state,action)=>{
             state.questionsList=action.payload;
         });
